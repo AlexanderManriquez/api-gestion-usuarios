@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const usuarioRoutes = require('./routes/usuario.routes');
-
+const authRoutes = require('./routes/auth.routes');
 const app = express();
 
 // Middleware globales: Uso json, carpeta public para archivos estáticos
@@ -10,6 +10,7 @@ app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Rutas: Rutas para la API y ruta de prueba
 app.use('/api', usuarioRoutes);
+app.use('/auth', authRoutes)
 
 app.get('/health', (req, res) => {
   res.send('API de gestión de usuarios funcionando');
