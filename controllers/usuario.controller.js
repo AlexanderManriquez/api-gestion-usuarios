@@ -1,3 +1,5 @@
+const path = require('path');
+const fs = require('fs');
 const {
   crearUsuario,
   buscarUsuarioPorId,
@@ -70,24 +72,39 @@ function eliminarUsuarioController(req, res) {
   }
 }
 
-//Controlador para actualizar imagen de usuario /usuarios/:id/imagen
-function actualizarImagenUsuarioController(req, res) {
+//Controlador para subir imagen de usuario /usuarios/:id/imagen
+async function subirImagenUsuarioController(req, res) {
   try {
     const { id } = req.params;
-    const { imagePath } = req.body;
+    
+    buscarUsuarioPorId(id);
 
-    if (!imagePath) {
-      return res.status(400).json({ mensaje: 'La ruta de la imagen es obligatoria' });
+    if (!req.files || !req.files.imagen) {
+      return res.status(400).json({ mensaje: 'No se ha subido ninguna imagen' });
     }
 
-    const usuario = actualizarImagenUsuario(id, imagePath);
+    const imagen = req.files.imagen;
+    //Validar tipo de archivo
+    const mimeTypesValidos = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!mimeTypesValidos.includes(imagen.mimetype)) {
+      return res.status(400).json({ mensaje: 'Tipo de archivo no válido. Solo se permiten imágenes en formato JPEG, PNG, GIF o WEBP.' });
+    }
+    //Generar nombre único para la imagen
+    const nombreArchivo = `usuario_${id}_${Date.now()}${path.extname(imagen.name)}`;
+    const rutaDestino = path.join(__dirname, '../uploads/', nombreArchivo);
 
-    res.json({
-      mnesaje: 'Imagen de usuario actualizada exitosamente',
-      usuario
-    })
+    await imagen.mv(rutaDestino);
+
+    const rutaImagen = `/uploads/${nombreArchivo}`;
+    const usuarioActualizado = await actualizarImagenUsuario(id, rutaImagen);
+
+    res.status(201).json({
+      mensaje: 'Imagen subida con éxito',
+      imagen: rutaImagen,
+      usuario: usuarioActualizado
+    });
   } catch (error) {
-    res.status(404).json({ mensaje: error.message });
+    res.status(400).json({ mensaje: error.message });
   }
 }
 
@@ -96,5 +113,5 @@ module.exports = {
   obtenerUsuarioController,
   actualizarUsuarioController,
   eliminarUsuarioController,
-  actualizarImagenUsuarioController
+  subirImagenUsuarioController
 };

@@ -5,7 +5,7 @@ const {
   obtenerUsuarioController,
   actualizarUsuarioController,
   eliminarUsuarioController,
-  actualizarImagenUsuarioController
+  subirImagenUsuarioController
 } = require('../controllers/usuario.controller');
 const authMiddleware = require('../middlewares/auth.middleware');
 
@@ -18,6 +18,6 @@ router.put('/usuarios/:id', authMiddleware, actualizarUsuarioController);
 // /Usuarios/:id (Eliminar usuario)
 router.delete('/usuarios/:id', authMiddleware, eliminarUsuarioController);
 // /Usuarios/:id/imagen (Actualizar imagen de usuario)
-router.put('/usuarios/:id/imagen', actualizarImagenUsuarioController);
+router.post('/usuarios/:id/imagen', subirImagenUsuarioController);
 
 module.exports = router;
