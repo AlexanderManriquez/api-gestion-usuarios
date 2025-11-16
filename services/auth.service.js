@@ -1,9 +1,10 @@
+require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { buscarUsuarioPorUsername } = require('./usuario.service');
 
-const ACCESS_TOKEN_SECRET = 'asecretkeyforaccesstoken';
-const REFRESH_TOKEN_SECRET = 'anothersecretkeyforrefreshtoken';
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET;
 
 const refreshTokensStore = [];
 
@@ -29,17 +30,18 @@ function refrescarToken(token) {
     throw new Error('Token de refresco inválido');
   }
 
-  return jwt.verify(token, REFRESH_TOKEN_SECRET, (err, decoded) => {
-    if (err) throw new Error('Token de refresco inválido');
-
+  try {
+    const decoded = jwt.verify(token, REFRESH_TOKEN_SECRET);
     const nuevoAccessToken = jwt.sign(
-      { id: decoded.id },
+      { id: decoded.id, username: decoded.username },
       ACCESS_TOKEN_SECRET,
       { expiresIn: '1h' }
     );
 
     return nuevoAccessToken;
-  });
+  } catch (err) {
+    throw new Error('Token de refresco inválido');
+  }
 }
 
 //Funcion para login de usuario

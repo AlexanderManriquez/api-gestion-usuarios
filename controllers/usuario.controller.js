@@ -7,6 +7,7 @@ const {
   eliminarUsuario,
   actualizarImagenUsuario
 } = require('../services/usuario.service');
+const { toPublicUsuario } = require('../utils/user.util');
 
 //Controlador para POST /usuarios
 async function crearUsuarioController(req, res) {
@@ -21,7 +22,7 @@ async function crearUsuarioController(req, res) {
 
     res.status(201).json({
       mensaje: 'Usuario registrado exitosamente',
-      usuario: nuevoUsuario
+      usuario: toPublicUsuario(nuevoUsuario)
     });
   } catch (error) {
     res.status(400).json({ mensaje: error.message });
@@ -33,7 +34,7 @@ function obtenerUsuarioController(req, res) {
   try {
     const { id } = req.params;
     const usuario = buscarUsuarioPorId(id);
-    res.json(usuario);
+    res.json(toPublicUsuario(usuario));
   } catch (error) {
     res.status(404).json({ mensaje: error.message });
   }
@@ -49,7 +50,7 @@ async function actualizarUsuarioController(req, res) {
 
     res.json({
       mensaje: 'Usuario actualizado exitosamente',
-      usuario: usuarioActualizado
+      usuario: toPublicUsuario(usuarioActualizado)
     });
   } catch (error) {
     res.status(400).json({ mensaje: error.message });
@@ -65,7 +66,7 @@ function eliminarUsuarioController(req, res) {
 
   res.json({
     mensaje: 'Usuario eliminado exitosamente',
-    usuario: eliminado
+    usuario: toPublicUsuario(eliminado)
   });
   } catch (error) {
     res.status(404).json({ mensaje: error.message });
@@ -101,7 +102,7 @@ async function subirImagenUsuarioController(req, res) {
     res.status(201).json({
       mensaje: 'Imagen subida con éxito',
       imagen: rutaImagen,
-      usuario: usuarioActualizado
+      usuario: toPublicUsuario(usuarioActualizado)
     });
   } catch (error) {
     res.status(400).json({ mensaje: error.message });

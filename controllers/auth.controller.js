@@ -1,4 +1,5 @@
 const { login, refrescarToken } = require('../services/auth.service');
+const { toPublicUsuario } = require('../utils/user.util');
 
 async function loginController(req, res) {
   try {
@@ -9,17 +10,20 @@ async function loginController(req, res) {
     }
 
     const data = await login(username, password);
+    const { accessToken, refreshToken, usuario } = data;
 
     res.json({
       mensaje: 'Login exitoso',
-      ...data
+      accessToken,
+      refreshToken,
+      usuario: toPublicUsuario(usuario)
     });
   } catch (error) {
     res.status(401).json({ mensaje: error.message });
   }
 }
 
-function refreshTokenController(req, res) {
+async function refreshTokenController(req, res) {
   try {
     const { refreshToken } = req.body;
 
@@ -27,9 +31,9 @@ function refreshTokenController(req, res) {
       return res.status(400).json({ mensaje: 'Token de refresco es obligatorio' });
     }
 
-    res.json({
-      accessToken: nuevoAcccessToken
-    });
+    const nuevoAccessToken = await refrescarToken(refreshToken);
+
+    res.json({ accessToken: nuevoAccessToken });
   } catch (error) {
     res.status(401).json({ mensaje: error.message });
   }

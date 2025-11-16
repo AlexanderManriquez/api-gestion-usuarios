@@ -1,5 +1,6 @@
+require('dotenv').config();
 const jwt = require('jsonwebtoken');
-const ACCESS_TOKEN_SECRET = 'asecretkeyforaccesstoken';
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
 
 function authMiddleware(req, res, next) {
   const authHeader = req.headers['authorization'];

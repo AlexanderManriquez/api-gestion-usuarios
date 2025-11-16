@@ -18,6 +18,6 @@ router.put('/usuarios/:id', authMiddleware, actualizarUsuarioController);
 // /Usuarios/:id (Eliminar usuario)
 router.delete('/usuarios/:id', authMiddleware, eliminarUsuarioController);
 // /Usuarios/:id/imagen (Actualizar imagen de usuario)
-router.post('/usuarios/:id/imagen', subirImagenUsuarioController);
+router.post('/usuarios/:id/imagen', authMiddleware, subirImagenUsuarioController);
 
 module.exports = router;
